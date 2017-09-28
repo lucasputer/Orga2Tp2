@@ -109,8 +109,8 @@ void solver_advect ( fluid_solver* solver, uint32_t b, float * d, float * d0, fl
 		END_FOR
 		solver_set_bnd ( solver, b, x );
 	}
-}*/
-
+}
+*/
 void solver_set_bnd ( fluid_solver* solver, uint32_t b, float * x ){
 	uint32_t i;
 	uint32_t N = solver->N;
