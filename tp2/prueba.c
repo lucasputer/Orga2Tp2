@@ -30,7 +30,7 @@ int main(){
 
 	llenarX(&x, size);
 
-	solver_lin_solve(solver, 1, x, x0, 300.0, 300.0);
+	solver_lin_solve(solver, 1, x, x0, 300.0, 150.0);
 
 	printMatriz(x, size);
 
