@@ -41,8 +41,6 @@ solver_lin_solve:
 	push rbx
 	sub rsp, 8		;alineada
 
-	LDMXCSR 
-	mov mxcsr, 0x5f81
 	;rdi = solver
 	;esi = b
 	;rdx = x
@@ -61,7 +59,7 @@ solver_lin_solve:
 	xor r15, r15 											; r15 = j
 	
 
-	mov r12d, [rdi +  OFFSET_FLUID_SOLVER_N]				;r12 = solver->N
+	mov r12d, [rdi + OFFSET_FLUID_SOLVER_N]					;r12 = solver->N
 	mov rbx, rdx											;rbx = x
 
 	.ciclok:
@@ -75,7 +73,6 @@ solver_lin_solve:
 		je .endi
 		mov r15d, 0
 	.cicloj:
-
 
 		cmp r15d, r12d
 		je .endj
@@ -134,11 +131,6 @@ solver_lin_solve:
 		ADDPS xmm3, xmm15				; xmm3 = x0[f] + (a/c) * (b+j+e+g) | x0[g] + (a/c) * (c+k+f+h) | ? | ?
 
 		movd [rbx + r8*4 + 4], xmm3		; escribe un solo resultado por iteracion
-
-
-		
-
-
 
 		inc r15d
 		jmp .cicloj
