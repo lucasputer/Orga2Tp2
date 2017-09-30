@@ -101,7 +101,7 @@ void solver_advect ( fluid_solver* solver, uint32_t b, float * d, float * d0, fl
 }
 
 /* SIMD IMPLEMENTATION */
-/*void solver_lin_solve ( fluid_solver* solver, uint32_t b, float * x, float * x0, float a, float c ){
+void solver_lin_solve ( fluid_solver* solver, uint32_t b, float * x, float * x0, float a, float c ){
 	uint32_t i, j, k;
 	for ( k=0 ; k<20 ; k++ ) {
 		FOR_EACH_CELL
@@ -109,7 +109,7 @@ void solver_advect ( fluid_solver* solver, uint32_t b, float * d, float * d0, fl
 		END_FOR
 		solver_set_bnd ( solver, b, x );
 	}
-}*/
+}
 
 void solver_set_bnd ( fluid_solver* solver, uint32_t b, float * x ){
 	uint32_t i;
@@ -126,17 +126,17 @@ void solver_set_bnd ( fluid_solver* solver, uint32_t b, float * x ){
 	x[IX(N+1,N+1)] = 0.5f*(x[IX(N,N+1)]+x[IX(N+1,N)]);
 }
 
-void solver_project ( fluid_solver* solver, float * p, float * div ){
-	uint32_t i, j;
-	FOR_EACH_CELL
-		div[IX(i,j)] = -0.5f*(solver->u[IX(i+1,j)]-solver->u[IX(i-1,j)]+solver->v[IX(i,j+1)]-solver->v[IX(i,j-1)])/solver->N;
-		p[IX(i,j)] = 0;
-	END_FOR	
-	solver_set_bnd ( solver, 0, div ); solver_set_bnd ( solver, 0, p );
-	solver_lin_solve ( solver, 0, p, div, 1, 4 );
-	FOR_EACH_CELL
-		solver->u[IX(i,j)] -= 0.5f*solver->N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
-		solver->v[IX(i,j)] -= 0.5f*solver->N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
-	END_FOR
-	solver_set_bnd ( solver, 1, solver->u ); solver_set_bnd ( solver, 2, solver->v );
-}
+// void solver_project ( fluid_solver* solver, float * p, float * div ){
+// 	uint32_t i, j;
+// 	FOR_EACH_CELL
+// 		div[IX(i,j)] = -0.5f*(solver->u[IX(i+1,j)]-solver->u[IX(i-1,j)]+solver->v[IX(i,j+1)]-solver->v[IX(i,j-1)])/solver->N;
+// 		p[IX(i,j)] = 0;
+// 	END_FOR	
+// 	solver_set_bnd ( solver, 0, div ); solver_set_bnd ( solver, 0, p );
+// 	solver_lin_solve ( solver, 0, p, div, 1, 4 );
+// 	FOR_EACH_CELL
+// 		solver->u[IX(i,j)] -= 0.5f*solver->N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
+// 		solver->v[IX(i,j)] -= 0.5f*solver->N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
+// 	END_FOR
+// 	solver_set_bnd ( solver, 1, solver->u ); solver_set_bnd ( solver, 2, solver->v );
+// }
