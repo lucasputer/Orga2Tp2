@@ -29,7 +29,8 @@ int main(){
 	float * x0 = (float *) malloc ( size*sizeof(float) );
 
 	llenarX(&x, size);
-
+	llenarX(&x0, size);
+	
 	solver_lin_solve(solver, 1, x, x0, 300.0, 150.0);
 
 	printMatriz(x, size);

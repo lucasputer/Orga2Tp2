@@ -68,6 +68,7 @@ solver_lin_solve:
 		cmp r13d, 20		
 		je .endK
 		mov r14d, 0
+
 	.cicloi:
 
 		cmp r14d, r12d
@@ -116,12 +117,13 @@ solver_lin_solve:
 ;		movdqu xmm2, xmm4				; xmm2 = 0 | 0 | b+j+e+g | c+k+f+h 	para que quede en el mismo registro que la version con conversion 
 
 ;	version con conversion a double presicion:
+		.debugg:
+
 		cvtPS2PD xmm2, xmm4				; xmm2 = b+j | c+k
 		cvtPS2PD xmm7, xmm5				; xmm7 = e+g | f+h
 		ADDPD xmm2, xmm7				; xmm2 = b+j+e+g | c+k+f+h					;OK
 
 		MULPD xmm2, xmm0				; xmm2 = a * (b+j+e+g) | a * (c+k+f+h)
-
 
 		movups xmm15, [rcx + r8*4]		; xmm15 = e0 | f0 | g0 | h0
 		PSRLDQ xmm15, 4					; xmm15 = f0 | g0 | h0 | 00
@@ -129,7 +131,7 @@ solver_lin_solve:
 		cvtPS2PD xmm14, xmm15			; xmm14 = f0 | g0
 
 		ADDPD xmm2, xmm14				; xmm2 = f0 + a * (b+j+e+g) | g0 + a * (c+k+f+h)
-		.debugg:
+		
 
 		DIVPD xmm2, xmm1 				; xmm2 = (f0 + a * (b+j+e+g)) / c | (g0 + a * (c+k+f+h)) / c
 
@@ -145,12 +147,35 @@ solver_lin_solve:
 	.endi:
 	inc r13d
 
-	mov rdx, rbx
 	push rcx
+	push rdi 
+	push rsi 
+	
+	;Push xmm0
+	sub rsp, 16
+	movdqu [rsp], xmm0
+	;Push xmm1
+	sub rsp, 16
+	movdqu [rsp], xmm1
+
 	sub rsp, 8
+
+	mov rdx, rbx
 	call solver_set_bnd
+	
 	add rsp, 8
+
+	;Pop xmm1
+	movdqu xmm1, [rsp]
+	add rsp, 16
+	;Pop xmm0
+	movdqu xmm0, [rsp]
+	add rsp, 16
+
+	pop rsi
+	pop rdi
 	pop rcx
+	
 	jmp .ciclok
 	.endK:
 
