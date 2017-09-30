@@ -170,11 +170,6 @@ solver_lin_solve_2pixel_por_lectura:
 
 		MULPD xmm2, xmm0				; xmm2 = a * (b+j+e+g) | a * (c+k+f'+h)
 
-		movups xmm15, [rcx + r8*4]		; xmm15 = e0 | f0 | g0 | h0
-		PSRLDQ xmm15, 4					; xmm15 = f0 | g0 | h0 | 00
-
-		cvtPS2PD xmm14, xmm15			; xmm14 = f0 | g0
-
 		ADDPD xmm2, xmm14				; xmm2 = f0 + a * (b+j+e+g) | g0 + a * (c+k+f'+h)
 		
 
