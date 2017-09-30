@@ -130,7 +130,6 @@ solver_lin_solve_2pixel_por_lectura:
 		DIVPD xmm2, xmm1 				; xmm2 = (f0 + a * (b+j+e+g)) / c | (g0 + a * (c+k+f+h)) / c
 
 		cvtPD2PS xmm3, xmm2				; xmm3 = (f0 + a * (b+j+e+g)) / c | (g0 + a * (c+k+f+h)) / c | 0 | 0
-		movd [rbx + r8*4 + 4], xmm3		; escribe un solo resultado
 
 		;Reemplazo f por el nuevo valor en xmm9
 
@@ -183,7 +182,13 @@ solver_lin_solve_2pixel_por_lectura:
 
 		cvtPD2PS xmm3, xmm2				; xmm3 = (f0 + a * (b+j+e+g)) / c | (g0 + a * (c+k+f'+h)) / c | 0 | 0
 		PSRLDQ xmm3, 4					; xmm3 = (g0 + a * (c+k+f'+h)) / c | 0 | 0 | 0
-		movd [rbx + r8*4 + 8], xmm3		; escribe un solo resultado
+
+		movd r11d, xmm3
+		shl r11, 32
+		shr r10, 32
+		or r10, r11
+
+		mov [rbx + r8*4 + 4], r10		; escribe dos resultados
 
 		inc r15d
 		jmp .cicloj
