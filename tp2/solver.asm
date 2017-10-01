@@ -420,12 +420,12 @@ solver_project:
 
 	movups xmm6, [valmenos05] ; -0.5
 
-	movd xmm7, r14d ; xmm3 = [N | ? | ? | ?]
+	movd xmm12, r14d ; xmm3 = [N | ? | ? | ?]
 	;psrldq xmm7, 12 ; xmm3 = [0 | 0 | 0 | N]
-	cvtdq2pd xmm7, xmm7
-	movdqu xmm4, xmm7
-	pslldq xmm7, 8; xmm4 = [0 | N | 0 | 0]
-	addpd xmm7, xmm4 ; ; xmm3 = [N| N]
+	cvtdq2pd xmm12, xmm12
+	movdqu xmm4, xmm12
+	pslldq xmm12, 8; xmm4 = [0 | N | 0 | 0]
+	addpd xmm12, xmm4 ; ; xmm3 = [N| N]
 	
 
 	xor r10, r10
@@ -511,7 +511,7 @@ solver_project:
 			mulpd xmm4, xmm6 ;xmm2 = [ -0.5*((g-e) + (j-b)) | -0.5*((h-f) + (k-c)) ]
 			
 			
-			divpd xmm4, xmm7 ; xmm2 = [ -0.5*((g-e) + (j-b))/N | -0.5*((h-f) + (k-c))/N ]
+			divpd xmm4, xmm12 ; xmm2 = [ -0.5*((g-e) + (j-b))/N | -0.5*((h-f) + (k-c))/N ]
 			cvtpd2ps xmm4, xmm4 ; xmm2 = [0 | 0 | -0.5*((g-e) + (j-b))/N | -0.5*((h-f) + (k-c))/N ]
 			; pslldq xmm3, 8; xmm4 = [ -0.5*((g-e) + (j-b))/N | -0.5*((h-f) + (k-c))/N | 0 | 0]
 			;el shift anterior mueve a la parte alta, no se si el movq hace eso o no			
@@ -535,18 +535,29 @@ solver_project:
 	.finCiclo1i:
 		; solver_set_bnd ( solver, 0, div );
 		; solver_set_bnd ( solver, 0, p );
-		; r9 = solver
-		; r10 = p
-		; r11 = div
+		;r9 = solver
+		;r15 = p
+		;r11 = div
 		mov rdi, r9 ; rdi = solver
 		xor rsi, rsi ; rsi = 0
 		mov rdx, r11; rdx = div
+		push r11
+		push r9
 		call solver_set_bnd
+
+		pop r9
+		pop r11
 
 		mov rdi, r9 ; rdi = solver
 		xor rsi, rsi ; rsi = 0
 		mov rdx, r15; rdx = p
+
+		push r11
+		push r9
 		call solver_set_bnd
+
+		pop r9
+		pop r11
 
 		;solver_lin_solve ( solver, 0, p, div, 1, 4 );
 		mov rdi, r9 ; rdi = solver
@@ -557,10 +568,24 @@ solver_project:
 		movq xmm0, [val1]  
 		pxor xmm1, xmm1
 		movq xmm1, [val4]
+
+		push r11
+		push r9
+
 		call solver_lin_solve
+
+		pop r9
+		pop r11
+
 
 	; for ( i=1 ; i<=solver->N ; i++ ) {
 	; 	for ( j=1 ; j<=solver->N ; j++ ) {
+
+	movd xmm12, r14d ; xmm3 = [N | ? | ? | ?]
+	cvtdq2pd xmm12, xmm12
+	movdqu xmm4, xmm12
+	pslldq xmm12, 8; xmm4 = [0 | N | 0 | 0]
+	addpd xmm12, xmm4 ; ; xmm3 = [N| N]
 
 	xor r12, r12 ;i
 	inc r12d
@@ -659,8 +684,8 @@ solver_project:
 			mulpd xmm2, xmm6 ; xmm3 = [0.5*(g-e)|0.5*(h-f)]
 
 			;habia guardado N en xmm7
-			mulpd xmm4, xmm7 ; xmm7 = [N*0.5*(j-b)|N*0.5*(k-c)]
-			mulpd xmm2, xmm7 ; xmm7 = [N*0.5*(g-e)|N*0.5*(h-f)]
+			mulpd xmm4, xmm12 ; xmm7 = [N*0.5*(j-b)|N*0.5*(k-c)]
+			mulpd xmm2, xmm12 ; xmm7 = [N*0.5*(g-e)|N*0.5*(h-f)]
 
 			; xmm0 = [  u_i,j  |u_i+1,j| u_i+2,j | u_i+3,j ]
 			; xmm1 = [  v_i,j  |v_i+1,j| v_i+2,j | v_i+3,j ]
@@ -705,8 +730,10 @@ solver_project:
 		xor rsi, rsi 
 		inc rsi ; rsi = 1
 		pop rdx ; rdx = [r9 + OFFSET_FLUID_SOLVER_U] 
+		push r9
 		call solver_set_bnd
 
+		pop r9
 		mov rdi, r9 ; rdi = solver
 		xor rsi, rsi
 		add rsi, 2 ; rsi = 2
