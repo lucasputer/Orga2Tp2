@@ -21,8 +21,8 @@ extern solver_set_bnd
 section .text
 global solver_lin_solve
 solver_lin_solve:
-;call solver_lin_solve_1pixel_por_lectura
-call solver_lin_solve_2pixel_por_lectura
+call solver_lin_solve_1pixel_por_lectura
+;call solver_lin_solve_2pixel_por_lectura
 ret
 
 section .text
@@ -394,7 +394,7 @@ section .rodata
 	val1: dd 1.0
 	val4: dd 4.0
 section .text
-;global solver_project
+global solver_project
 solver_project:
 	push rbp		
 	push r12 		
