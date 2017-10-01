@@ -16,14 +16,18 @@
 extern malloc
 extern free
 extern solver_set_bnd
-extern solver_lin_solve
+;extern solver_lin_solve
 
-;section .text
-;global solver_lin_solve
-;solver_lin_solve:
+section .text
+global solver_lin_solve
+solver_lin_solve:
+
+;siempre tener uno de los dos call comentados
+
 ;call solver_lin_solve_1pixel_por_lectura
-;;call solver_lin_solve_2pixel_por_lectura
-;ret
+call solver_lin_solve_2pixel_por_lectura
+
+ret
 
 section .text
 solver_lin_solve_2pixel_por_lectura:
