@@ -18,7 +18,7 @@ extern free
 extern solver_set_bnd
 
 section .text
-global solver_lin_solve
+;global solver_lin_solve
 solver_lin_solve:
 ;call solver_lin_solve_1pixel_por_lectura
 call solver_lin_solve_2pixel_por_lectura
