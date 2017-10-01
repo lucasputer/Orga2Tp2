@@ -12,10 +12,11 @@
 %define OFFSET_FLUID_SOLVER_DENS_PREV 60
 %define FLUID_SOLVER_SIZE 60
 
+section .data
+	menos1: dd -1.0,-1.0,-1.0,-1.0
+	menos1ppio: dd -1.0, 1.0, 1.0, 1.0
+	menos1final: dd 1.0,1.0,1.0,-1.0
 
-extern malloc
-extern free
-extern solver_set_bnd
 
 section .text
 global solver_lin_solve
@@ -24,7 +25,6 @@ solver_lin_solve:
 call solver_lin_solve_2pixel_por_lectura
 ret
 
-section .text
 solver_lin_solve_2pixel_por_lectura:
 	push rbp		
 	mov rbp, rsp
@@ -236,7 +236,7 @@ solver_lin_solve_2pixel_por_lectura:
 	pop rbp
 	ret
 
-section .text
+
 solver_lin_solve_1pixel_por_lectura:
 	push rbp		
 	mov rbp, rsp
@@ -384,5 +384,248 @@ solver_lin_solve_1pixel_por_lectura:
 	pop r14
 	pop r13
 	pop r12
+	pop rbp
+	ret
+
+
+;void solver_set_bnd ( fluid_solver* solver, uint32_t b, float * x ){
+;	uint32_t i;
+;	uint32_t N = solver->N;
+;	for ( i=1 ; i<=N ; i++ ) {
+;		x[IX(0  ,i)] = b==1 ? -x[IX(1,i)] : x[IX(1,i)];
+;		x[IX(N+1,i)] = b==1 ? -x[IX(N,i)] : x[IX(N,i)];
+;		x[IX(i,0  )] = b==2 ? -x[IX(i,1)] : x[IX(i,1)];
+;		x[IX(i,N+1)] = b==2 ? -x[IX(i,N)] : x[IX(i,N)];
+;	}
+;	x[IX(0  ,0  )] = 0.5f*(x[IX(1,0  )]+x[IX(0  ,1)]);
+;	x[IX(0  ,N+1)] = 0.5f*(x[IX(1,N+1)]+x[IX(0  ,N)]);
+;	x[IX(N+1,0  )] = 0.5f*(x[IX(N,0  )]+x[IX(N+1,1)]);
+;	x[IX(N+1,N+1)] = 0.5f*(x[IX(N,N+1)]+x[IX(N+1,N)]);
+;}
+global solver_set_bnd
+solver_set_bnd:
+	push rbp
+	mov rbp, rsp
+
+	;en rdi tengo el solver
+	;en esi tengo el b
+	;en rdx tengo el x
+
+	push rbx
+
+	xor rax, rax ; rax es el i
+
+	mov rbx, rdx ; las multiplicaciones afectan el rdx. lo muevo a rbx para no perderlo
+
+	xor r9, r9
+	mov r9d, [rdi + OFFSET_FLUID_SOLVER_N] ; r9 = N
+	
+	;x[IX(i,0)] = b==2 ? -x[IX(i,1)] : x[IX(i,1)];
+	;eax esta en 0 y va a recorrer la fila 0
+	;avanzo eax de a 4*4 bytes
+	;a ecx lo avanzo una fila y lo uso para leer la fila 1
+
+	xor rcx, rcx
+
+	mov ecx, r9d
+	add ecx, 2
+
+	;el loop arranca el i = 1
+	inc ecx
+	inc eax
+
+	xor r8, r8
+	mov r8d, r9d
+
+	movdqu xmm13, [menos1ppio]
+	movdqu xmm14, [menos1final]
+	movdqu xmm15, [menos1]
+	
+
+	.cicloFila0:
+
+		cmp eax, r8d
+		jge .finCicloF0
+		;hay que leer la fila 1 ( uso ecx que ya esta adelantado 1 fila)
+		;para cada float hacer el if con b
+		;si b es 2, guardas -x el valor
+		movdqu xmm0, [rbx + rcx*4] ; xmm0 = [D,C,B,A]
+		cmp esi, 2
+		jne .avanzarF0
+		.invertirF0:
+			mulps xmm0, xmm15
+		.avanzarF0:
+			movdqu [rbx+rax*4], xmm0
+			add rax, 4
+			add rcx, 4
+			jmp .cicloFila0
+
+	.finCicloF0:
+
+ 
+ 	;en rax ya esta posicionado en la segunda fila.
+	;procesamos ambas columnas a la vez
+	;procesamos los primeros 4 floats
+	;avazamos rax  n-2
+	;leemos los siguientes 4 floats
+	mov eax, r9d
+	add eax, 2
+
+	mov r8d, r9d
+	sub r8d, 2
+
+	xor rcx, rcx
+	mov ecx, r9d
+	.cicloColumnas:
+		;x[IX(0  ,i)] = b==1 ? -x[IX(1,i)] : x[IX(1,i)];
+		cmp ecx, 0
+		je .cicloFilaN2
+		movdqu xmm0, [rbx + rax*4] ; xmmo = [D,C,B,A]
+		pshufd xmm0, xmm0, 11100101b
+		cmp esi, 1
+		je .escribirYavanzar
+		mulps xmm0, xmm13
+		.escribirYavanzar:
+			movdqu [rbx + rax*4], xmm0
+			add eax, r8d
+			;x[IX(N+1,i)] = b==1 ? -x[IX(N,i)] : x[IX(N,i)];
+			movdqu xmm0, [rbx + rax*4] ; xmmo = [x_(n-2), x_(n-1), x_(n),x_(n+1)]
+			pshufd xmm0, xmm0, 10100100b
+			cmp esi, 1
+			jne .finCicloColuma
+			mulps xmm0, xmm14
+		.finCicloColuma:
+			movdqu [rbx + rax*4], xmm0
+			add eax, 4
+			dec ecx
+			jmp .cicloColumnas
+	.cicloFilaN2:
+		
+		inc eax
+
+		xor rcx, rcx
+		mov ecx, eax
+		sub ecx, r9d
+		sub ecx, 2
+
+		
+		add r9d, eax ; r9d = ((n+2)*(n+1)) + n + 1 = n**2 + 4n + 3, si n == 4 ==> r9d = 35 
+		; en eax tengo la posicion del primer elemento de la ultima fila
+		; tengo q loopear N
+		.cicloFilaN:
+			cmp eax, r9d
+			jge .finTodo
+			movdqu xmm0, [rbx + rcx*4] ; xmm0 = [D,C,B,A]
+			cmp esi, 2
+			jne .avanzarFN
+			.invertirFN:
+				mulps xmm0, xmm15
+			.avanzarFN:
+				movdqu [rbx+rax*4], xmm0
+				add rax, 4
+				add rcx, 4
+				jmp .cicloFilaN
+
+				
+	
+
+		;ESQUINA SUPERIOR IZQUIERDA
+		mov eax, [rbx + 4]
+		mov r11d, [rbx + r8*4]
+		add eax, r11d
+		xor r10, r10
+		add r10d, 2
+		idiv r10d
+		mov [rbx], eax
+
+
+
+		.finTodo:
+		.esquinas:
+		xor rdx, rdx
+		xor r8,r8
+		xor r11, r11
+		mov r9d, [rdi + OFFSET_FLUID_SOLVER_N]
+		mov r8d, r9d
+		add r8d, 2
+
+		;ESQUINA SUPERIOR DERECHA
+		xor rdx, rdx
+		xor r8, r8
+		mov r8d, r9d
+		inc r8d
+		mov eax, [rbx + 4*r8]
+		inc r8d
+		add r8d, r9d
+		inc r8d
+		inc r8d
+		mov r11d, [rbx+r8*4]
+		add eax, r11d
+		xor r10, r10
+		add r10d, 2
+		idiv r10d
+		sub r8d, r9d
+		sub r8d, 2
+		mov [rbx + r8*4], eax
+
+		;ESQUINA INFERIOR IZQUIERDA
+		xor rdx, rdx
+		xor r8, r8
+		mov r8d, r9d
+		add r8d,2
+		mov eax, r8d
+		mul r8d
+		xor rdx, rdx
+		sub eax, r9d
+		sub eax, 2
+		mov r8d, eax
+		mov eax, [rbx + r8*4 + 4]
+		sub r8d, r9d
+		sub r8d, 2
+		mov r11d, [rbx +r8*4]
+		add r8d, r9d
+		add r8d, 2
+		add eax, r11d
+		xor r10, r10
+		add r10d, 2
+		idiv r10d
+		mov [rbx + r8*4], eax
+		
+
+
+
+		;ESQUINA INFERIOR DERECHA
+		xor rdx, rdx
+		xor r8, r8
+		mov r8d, r9d
+		add r8d,2
+		mov eax, r8d
+		mul r8d
+		xor rdx, rdx
+		mov r8d, eax
+
+		sub r8d, 2
+		mov eax, [rbx + r8*4]
+
+		sub r8d, r9d
+		dec r8d
+
+		mov r11d, [rbx + r8*4]
+
+		add eax, r11d
+		xor r10, r10
+		add r10d, 2
+		div r10d
+
+		add r8d, r9d
+		add r8d, 2
+		mov [rbx+r8*4], eax
+
+		
+
+
+	
+
+	pop rbx
 	pop rbp
 	ret
