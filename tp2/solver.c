@@ -101,6 +101,7 @@ void solver_advect ( fluid_solver* solver, uint32_t b, float * d, float * d0, fl
 }
 
 /* SIMD IMPLEMENTATION */
+/*
 void solver_lin_solve ( fluid_solver* solver, uint32_t b, float * x, float * x0, float a, float c ){
 	uint32_t i, j, k;
 	for ( k=0 ; k<20 ; k++ ) {
@@ -109,7 +110,7 @@ void solver_lin_solve ( fluid_solver* solver, uint32_t b, float * x, float * x0,
 		END_FOR
 		solver_set_bnd ( solver, b, x );
 	}
-}
+}*/
 
 void solver_set_bnd ( fluid_solver* solver, uint32_t b, float * x ){
 	uint32_t i;
@@ -125,7 +126,7 @@ void solver_set_bnd ( fluid_solver* solver, uint32_t b, float * x ){
 	x[IX(N+1,0  )] = 0.5f*(x[IX(N,0  )]+x[IX(N+1,1)]);
 	x[IX(N+1,N+1)] = 0.5f*(x[IX(N,N+1)]+x[IX(N+1,N)]);
 }
-/*
+
 void solver_project ( fluid_solver* solver, float * p, float * div ){
 	uint32_t i, j;
 	FOR_EACH_CELL
@@ -154,4 +155,4 @@ void solver_project ( fluid_solver* solver, float * p, float * div ){
 		solver->v[IX(i,j)] -= 0.5f*solver->N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
 	END_FOR
 	solver_set_bnd ( solver, 1, solver->u ); solver_set_bnd ( solver, 2, solver->v );
-}*/
+}

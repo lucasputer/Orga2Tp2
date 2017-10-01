@@ -16,9 +16,10 @@
 extern malloc
 extern free
 extern solver_set_bnd
+;extern solver_lin_solve
 
 section .text
-;global solver_lin_solve
+global solver_lin_solve
 solver_lin_solve:
 ;call solver_lin_solve_1pixel_por_lectura
 call solver_lin_solve_2pixel_por_lectura
@@ -387,15 +388,13 @@ solver_lin_solve_1pixel_por_lectura:
 	pop rbp
 	ret
 
-
-
 section .rodata
 	valmenos05: dq -0.5, -0.5
 	val05: dq 0.5, 0.5
 	val1: dd 1.0
 	val4: dd 4.0
 section .text
-global solver_project
+;global solver_project
 solver_project:
 	push rbp		
 	push r12 		
