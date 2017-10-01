@@ -126,17 +126,32 @@ void solver_set_bnd ( fluid_solver* solver, uint32_t b, float * x ){
 	x[IX(N+1,N+1)] = 0.5f*(x[IX(N,N+1)]+x[IX(N+1,N)]);
 }
 
-void solver_project ( fluid_solver* solver, float * p, float * div ){
-	uint32_t i, j;
-	FOR_EACH_CELL
-		div[IX(i,j)] = -0.5f*(solver->u[IX(i+1,j)]-solver->u[IX(i-1,j)]+solver->v[IX(i,j+1)]-solver->v[IX(i,j-1)])/solver->N;
-		p[IX(i,j)] = 0;
-	END_FOR	
-	solver_set_bnd ( solver, 0, div ); solver_set_bnd ( solver, 0, p );
-	solver_lin_solve ( solver, 0, p, div, 1, 4 );
-	FOR_EACH_CELL
-		solver->u[IX(i,j)] -= 0.5f*solver->N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
-		solver->v[IX(i,j)] -= 0.5f*solver->N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
-	END_FOR
-	solver_set_bnd ( solver, 1, solver->u ); solver_set_bnd ( solver, 2, solver->v );
-}
+// void solver_project ( fluid_solver* solver, float * p, float * div ){
+// 	uint32_t i, j;
+// 	FOR_EACH_CELL
+// 		div[IX(i,j)] = -0.5f*(solver->u[IX(i+1,j)]-solver->u[IX(i-1,j)]+solver->v[IX(i,j+1)]-solver->v[IX(i,j-1)])/solver->N;
+// 		p[IX(i,j)] = 0;
+// 	END_FOR	
+// 	solver_set_bnd ( solver, 0, div ); solver_set_bnd ( solver, 0, p );
+// 	solver_lin_solve ( solver, 0, p, div, 1, 4 );
+// 	FOR_EACH_CELL
+// 		// if(IX(i,j) == 7){
+// 		// 	printf("p[i+1] : %f\n", p[IX(i+1,j)]);
+// 		// 	printf("p[i-1] : %f\n", p[IX(i-1,j)]);
+// 		// 	printf("p[j+1] : %f\n", p[IX(i,j+1)]);
+// 		// 	printf("p[j-1] : %f\n", p[IX(i,j-1)]);
+// 		// 	printf("u : %f\n", solver->u[IX(i,j)]);
+// 		// 	printf("v : %f\n", solver->v[IX(i,j)]);
+// 		// 	printf("1_pre : %f\n", (p[IX(i+1,j)]-p[IX(i-1,j)]));
+// 		// 	printf("2_pre : %f\n", (p[IX(i,j+1)]-p[IX(i,j-1)]));
+
+// 		// 	printf("1 : %f\n", 0.5f*solver->N*(p[IX(i+1,j)]-p[IX(i-1,j)]));
+// 		// 	printf("2 : %f\n", 0.5f*solver->N*(p[IX(i,j+1)]-p[IX(i,j-1)]));
+// 		// 	printf("u - 1 : %f\n", solver->u[IX(i,j)] - 0.5f*solver->N*(p[IX(i+1,j)]-p[IX(i-1,j)]));
+// 		// 	printf("v - 2 : %f\n", solver->v[IX(i,j)] - 0.5f*solver->N*(p[IX(i,j+1)]-p[IX(i,j-1)]));
+// 		// }
+// 		solver->u[IX(i,j)] -= 0.5f*solver->N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
+// 		solver->v[IX(i,j)] -= 0.5f*solver->N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
+// 	END_FOR
+// 	// solver_set_bnd ( solver, 1, solver->u ); solver_set_bnd ( solver, 2, solver->v );
+// }
