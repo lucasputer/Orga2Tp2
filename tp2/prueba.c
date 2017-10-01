@@ -26,7 +26,7 @@ void printMatriz(float * x, int N){
 int main(){
 
 	//	N = 256; 	dt = 0.05;	diff = 0.0f;	visc = 0.0f;	force = 20.0f;	source = 600.0f;
-	int size = 100q;
+	int size = 100;
 
 	solver = solver_create(8, 0.05, 0, 0);
 

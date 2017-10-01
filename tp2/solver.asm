@@ -16,10 +16,12 @@ section .data
 	menos1: dd -1.0,-1.0,-1.0,-1.0
 	menos1ppio: dd -1.0, 1.0, 1.0, 1.0
 	menos1final: dd 1.0,1.0,1.0,-1.0
+	dos: dd 2.0,1.0,1.0,1.0
 
 
 section .text
 global solver_lin_solve
+;extern solver_set_bnd
 solver_lin_solve:
 ;call solver_lin_solve_1pixel_por_lectura
 call solver_lin_solve_2pixel_por_lectura
@@ -483,7 +485,7 @@ solver_set_bnd:
 		movdqu xmm0, [rbx + rax*4] ; xmmo = [D,C,B,A]
 		pshufd xmm0, xmm0, 11100101b
 		cmp esi, 1
-		je .escribirYavanzar
+		jne .escribirYavanzar
 		mulps xmm0, xmm13
 		.escribirYavanzar:
 			movdqu [rbx + rax*4], xmm0
@@ -527,20 +529,12 @@ solver_set_bnd:
 				jmp .cicloFilaN
 
 				
-	
 
-		;ESQUINA SUPERIOR IZQUIERDA
-		mov eax, [rbx + 4]
-		mov r11d, [rbx + r8*4]
-		add eax, r11d
-		xor r10, r10
-		add r10d, 2
-		idiv r10d
-		mov [rbx], eax
-
-
-
+		
 		.finTodo:
+
+		movd xmm15, [dos]
+
 		.esquinas:
 		xor rdx, rdx
 		xor r8,r8
@@ -549,24 +543,32 @@ solver_set_bnd:
 		mov r8d, r9d
 		add r8d, 2
 
+
+		;ESQUINA SUPERIOR IZQUIERDA
+		movd xmm1, [rbx + 4]
+		movd xmm2, [rbx + r8*4]
+		addss xmm1, xmm2
+		divss xmm1, xmm15
+		movd [rbx], xmm1
+
+
+
+
 		;ESQUINA SUPERIOR DERECHA
 		xor rdx, rdx
 		xor r8, r8
 		mov r8d, r9d
-		inc r8d
-		mov eax, [rbx + 4*r8]
+		movd xmm1, [rbx + 4*r8]
 		inc r8d
 		add r8d, r9d
 		inc r8d
 		inc r8d
-		mov r11d, [rbx+r8*4]
-		add eax, r11d
-		xor r10, r10
-		add r10d, 2
-		idiv r10d
+		movd xmm2, [rbx+r8*4]
+		addss xmm1, xmm2
+		divss xmm1, xmm15
 		sub r8d, r9d
 		sub r8d, 2
-		mov [rbx + r8*4], eax
+		movd [rbx + r8*4], xmm1
 
 		;ESQUINA INFERIOR IZQUIERDA
 		xor rdx, rdx
@@ -579,17 +581,15 @@ solver_set_bnd:
 		sub eax, r9d
 		sub eax, 2
 		mov r8d, eax
-		mov eax, [rbx + r8*4 + 4]
+		movd xmm1, [rbx + r8*4 + 4]
 		sub r8d, r9d
 		sub r8d, 2
-		mov r11d, [rbx +r8*4]
+		movd xmm2, [rbx +r8*4]
 		add r8d, r9d
 		add r8d, 2
-		add eax, r11d
-		xor r10, r10
-		add r10d, 2
-		idiv r10d
-		mov [rbx + r8*4], eax
+		addss xmm1, xmm2
+		divss xmm1, xmm15
+		movd [rbx + r8*4], xmm1
 		
 
 
@@ -605,21 +605,19 @@ solver_set_bnd:
 		mov r8d, eax
 
 		sub r8d, 2
-		mov eax, [rbx + r8*4]
+		movd xmm1, [rbx + r8*4]
 
 		sub r8d, r9d
 		dec r8d
 
-		mov r11d, [rbx + r8*4]
+		movd xmm2, [rbx + r8*4]
 
-		add eax, r11d
-		xor r10, r10
-		add r10d, 2
-		div r10d
+		addss xmm1, xmm2
+		divss xmm1, xmm15
 
 		add r8d, r9d
 		add r8d, 2
-		mov [rbx+r8*4], eax
+		movd [rbx+r8*4], xmm1
 
 		
 
