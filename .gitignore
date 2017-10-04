@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Imagenes
 *.bmp
 
@@ -6,10 +5,8 @@
 *.d
 
 # Object files
-=======
 prueba
 demo
->>>>>>> origin/solver_set_bnd
 *.o
 tmp/
 prueba.c

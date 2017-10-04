@@ -46,7 +46,6 @@ int main(){
 	llenarX(&div2, size);
 	
 	//solver_lin_solve(solver, 1, x, x0, 300.0, 150.0);
-<<<<<<< HEAD
 	solver_set_initial_density(solver);
 	solver_set_initial_velocity(solver);
 
@@ -80,12 +79,6 @@ int main(){
 	// printMatriz(x0, size);
 	// printMatriz(x02, size);
 
-=======
-
-	printMatriz(x, size);
-	printf("\n");
-	solver_set_bnd(solver, 1, x);
->>>>>>> origin/solver_set_bnd
 
 
 	return 0;

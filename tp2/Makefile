@@ -38,4 +38,5 @@ bmp_mac.o: bmp/bmp.c bmp/bmp.h
 clean:
 	rm -f *.o
 	rm -f demo demo_mac
+	rm -f prueba
 
