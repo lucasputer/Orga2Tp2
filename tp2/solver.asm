@@ -31,8 +31,8 @@ solver_lin_solve:
 	;siempre tener uno de los dos call comentados
 
 	;call solver_lin_solve_1pixel_por_lectura
-	;call solver_lin_solve_2pixel_por_lectura
-	call solver_lin_solve_2pixel_optimo
+	call solver_lin_solve_2pixel_por_lectura
+	;call solver_lin_solve_2pixel_optimo
 
 	ret
 
