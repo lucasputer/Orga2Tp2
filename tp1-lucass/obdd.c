@@ -1,6 +1,6 @@
 #include "obdd.h"
 #include "assert.h"
-
+#include "<string>"
 uint32_t obdd_mgr_greatest_ID = 0;
 /** DICTIONARY FUNCTIONS **/
 
@@ -532,11 +532,11 @@ bool is_constant(obdd_mgr* mgr, obdd_node* root){
 
 /** AUX FUNCTIONS **/
 
-/** implementar en ASM
+implementar en ASM
 uint32_t str_len(char* a) {
-	return 0;
+	return strlen(a);
 }
-**/
+
 
 /** implementar en ASM
 char* str_copy(char* a) {
