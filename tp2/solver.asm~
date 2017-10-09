@@ -394,7 +394,7 @@ section .rodata
 	val1: dd 1.0
 	val4: dd 4.0
 section .text
-global solver_project
+;global solver_project
 solver_project:
 	push rbp		
 	push r12 		

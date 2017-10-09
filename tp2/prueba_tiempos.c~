@@ -7,7 +7,7 @@
 #include <unistd.h>
 fluid_solver* solver;
 
-char *archivo_out  =  "salida.caso.tiempos.c.simd.o1.dat";
+char *archivo_out  =  "salida.caso.tiempos.c.simd.o2.dat";
 int ITERACIONES = 10;
 
 void llenarX(float ** x, int N){
