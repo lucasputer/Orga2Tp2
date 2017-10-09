@@ -214,9 +214,9 @@ obdd_destroy:
 	mov rbp, rsp
 
 	mov r12, rdi
-	mov rdi, [r12 + offset_obdd_node]
+	mov r13, [r12 + offset_obdd_node]
 
-	cmp rdi, NULL
+	cmp r13, NULL
 	je end_obdd_destroy
 	call obdd_node_destroy
 	xor r8, r8

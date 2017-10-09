@@ -24,6 +24,9 @@ solver_asm.o: solver.asm
 prueba: prueba.c solver.o bmp.o solver_asm.o
 	$(CC) $(CFLAGS) $^ -o $@  $(LIBS)
 
+tiempos: prueba_tiempos.c solver.o bmp.o solver_asm.o
+	$(CC) $(CFLAGS) $^ -o $@  $(LIBS)	
+
 mac: demo_mac
 
 demo_mac: demo.c solver_mac.o bmp_mac.o
