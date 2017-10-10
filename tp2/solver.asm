@@ -24,7 +24,6 @@ section .data
 
 section .text
 global solver_lin_solve
-;extern solver_set_bnd
 solver_lin_solve:
 
 	;siempre tener uno de los dos call comentados
@@ -35,8 +34,7 @@ solver_lin_solve:
 
 	ret
 
-
-
+global solver_lin_solve_1pixel_por_lectura
 solver_lin_solve_1pixel_por_lectura:
 	push rbp		
 	mov rbp, rsp
@@ -187,6 +185,7 @@ solver_lin_solve_1pixel_por_lectura:
 	pop rbp
 	ret
 
+global solver_lin_solve_2pixel_por_lectura
 solver_lin_solve_2pixel_por_lectura:
 	push rbp		
 	mov rbp, rsp
@@ -401,6 +400,7 @@ solver_lin_solve_2pixel_por_lectura:
 section .data
 	mascarashuffle: db 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0xFF, 0xFF, 0xFF, 0xFF, 0x0C, 0x0D, 0x0E, 0x0F
 section .text
+global solver_lin_solve_2pixel_optimo
 solver_lin_solve_2pixel_optimo:	
 	push rbp		
 	mov rbp, rsp

@@ -10,7 +10,7 @@
 
 fluid_solver* solver;
 
-char *archivo_out  =  "salida.caso.tiempos.c.simd.o1.dat";
+char *archivo_out  =  "solver_lin_solve_1pixel_vs_c_o1";
 int ITERACIONES = 10;
 
 
@@ -45,18 +45,17 @@ int main(){
 			int size = (inner_size + 2)*(inner_size + 2);
 			solver = solver_create(inner_size, 0.05, 0, 0);
 
-			float * p = (float *) malloc ( size*sizeof(float) );
-			float * div = (float *) malloc ( size*sizeof(float) );
+			float * x = (float *) malloc ( size*sizeof(float) );
+			float * x0 = (float *) malloc ( size*sizeof(float) );
 
-			llenarX(&p, size);
-			llenarX(&div, size);
+			llenarX(&x, size);
+			llenarX(&x0, size);
 
 			solver_set_initial_density(solver);
 			solver_set_initial_velocity(solver);
 
-
 			clock_t begin = clock();
-			solver_project(solver, p, div);
+			solver_lin_solve(solver, 1, x, x0, 30.0, 15.0);
 			clock_t end = clock();
 			total_iteracion += (double)(end - begin);
 			//printf("iteracion %d\n", iteracion);
