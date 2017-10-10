@@ -1,4 +1,5 @@
 #include "solver.h"
+
 fluid_solver* solver;
 
 void llenarX(float ** x, int N){
@@ -10,17 +11,24 @@ void llenarX(float ** x, int N){
 
 void printMatriz(float * x, int N){
 	int i = 0;
-	for(i = 0 ; i < N ; i++){
-		printf("x[%d] = %0.2f \n", i, x[i]);
+	int j = 0;
+	float n = sqrt(N);
+	int filas = (int)(n);
+	int columnas = filas;
+	for(i = 0 ; i < filas ; i++){
+		for(j = 0 ; j < columnas ; j++) {
+			printf("x[%d] = %0.2f\t", (j + i*filas), x[j + i*filas]);
+		}
+		printf("\n");
 	}
 }
 
 int main(){
 
 	//	N = 256; 	dt = 0.05;	diff = 0.0f;	visc = 0.0f;	force = 20.0f;	source = 600.0f;
-	int size = 36;
+	int size = 100;
 
-	solver = solver_create(4, 0.05, 0, 0);
+	solver = solver_create(8, 0.05, 0, 0);
 
 	
 
