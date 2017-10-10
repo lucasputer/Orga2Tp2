@@ -5,15 +5,23 @@
 #include <stdint.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <time.h>
+#include <stdlib.h>
+
 fluid_solver* solver;
 
 char *archivo_out  =  "salida.caso.tiempos.c.simd.o1.dat";
 int ITERACIONES = 10;
 
-void llenarX(float ** x, int N){
+
+
+
+void llenarRand(float ** x, int N){
+	srand(time(NULL));
 	int i = 0;
 	for(i = 0 ; i < N ; i++){
-		(*x)[i] = i + 1;
+		float random = (float)rand() % 256;  //floats entre 0 y 255
+		(*x)[i] = random;  
 	}
 }
 
