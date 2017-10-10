@@ -22,7 +22,6 @@ section .data
 	val1: dd 1.0
 	val4: dd 4.0
 
-
 section .text
 global solver_lin_solve
 ;extern solver_set_bnd
@@ -31,10 +30,12 @@ solver_lin_solve:
 	;siempre tener uno de los dos call comentados
 
 	;call solver_lin_solve_1pixel_por_lectura
-	call solver_lin_solve_2pixel_por_lectura
-	;call solver_lin_solve_2pixel_optimo
+	;call solver_lin_solve_2pixel_por_lectura
+	call solver_lin_solve_2pixel_optimo
 
 	ret
+
+
 
 solver_lin_solve_1pixel_por_lectura:
 	push rbp		
@@ -397,6 +398,9 @@ solver_lin_solve_2pixel_por_lectura:
 	pop rbp
 	ret
 
+section .data
+	mascarashuffle: db 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0xFF, 0xFF, 0xFF, 0xFF, 0x0C, 0x0D, 0x0E, 0x0F
+section .text
 solver_lin_solve_2pixel_optimo:	
 	push rbp		
 	mov rbp, rsp
@@ -419,12 +423,12 @@ solver_lin_solve_2pixel_optimo:
 	shufpd xmm0, xmm0, 00000000b 	; xmm0 =  a | a
 	shufpd xmm1, xmm1, 00000000b 	; xmm1 =  c | c
 
+	movdqu xmm13, [mascarashuffle]
 
 	xor r12, r12
 	xor r13, r13 											; r13 = k
 	xor r14, r14 											; r14 = i
-	xor r15, r15 											; r15 = j
-	
+	xor r15, r15 											; r15 = j	
 
 	mov r12d, [rdi + OFFSET_FLUID_SOLVER_N]					;r12 = solver->N
 	mov rbx, rdx											;rbx = x
@@ -458,12 +462,11 @@ solver_lin_solve_2pixel_optimo:
 	add eax, r12d
 	add eax, 2
 
-	
-
 	movups xmm9, [rbx + rax*4]		; xmm9 =  e | f | g | h
-	
 
 	.cicloj: 
+		cmp r15d, r12d
+		je .endj
 
 		mov r8, rax						; r8 = posicion temporal dentro de la matriz correspondiente al i-1,j de la iteración
 		add eax, r12d
@@ -474,8 +477,7 @@ solver_lin_solve_2pixel_optimo:
 		movdqu xmm4, xmm8				
 		movdqu xmm5, xmm9				; preservo xmm8, xmm9 y xmm10 para usarlos en la 2da iteración
 		movdqu xmm6, xmm10
-		cmp r15d, r12d
-		je .endj
+		
 
 		;ITERACION 1
 		movdqu xmm7, xmm5   			; xmm7 =  e | f | g | h
@@ -523,7 +525,7 @@ solver_lin_solve_2pixel_optimo:
 		PSLLDQ xmm9, 8					; xmm9 = 0 | 0  | g | h
 
 		POR xmm9, xmm11					; xmm9 = e | f' | g | h
-
+		.debugg0:
 		movdqu xmm4, xmm8				
 		movdqu xmm5, xmm9				
 		movdqu xmm6, xmm10
@@ -560,29 +562,22 @@ solver_lin_solve_2pixel_optimo:
 
 		mov [rbx + r8*4 + 4], r10		; escribe dos resultados
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;DESDE ACA
 		;Reemplazo g por el nuevo valor en xmm9
 
-		xor r10, r10
-		xor r11, r11
+		.debugg:
 
-		movd r10d, xmm3					;r10 = g' | 0
-		shl r10, 32						;r10 = 0  | g'
-		movd r11d, xmm9					;r11 = e  | 0
-		or r10, r11 					;r10 = e  | f'
+		PSLLDQ xmm3, 8					; xmm3 = 0 | 0  | g' | 0
 
-		pxor xmm11, xmm11
-		movq xmm11, r10 				;xmm11 = e | f' | 0 | 0
+			
+		PSHUFB xmm9, xmm13			; xmm9 = e | f' | 0  | h
 
-		PSRLDQ xmm9, 8					; xmm9 = g | h  | 0 | 0
-		PSLLDQ xmm9, 8					; xmm9 = 0 | 0  | g | h
+		POR xmm9, xmm3					; xmm9 = e | f' | g' | h
 
-		POR xmm9, xmm11					; xmm9 = e | f' | g | h
 		;SWAPEO LAS FILAS PARA LA SIGUIENTE ITERACION
 
-		movdqu xmm4, xmm9				
-		movdqu xmm5, xmm10
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;HASTA ACA
+		movdqu xmm8, xmm9				
+		movdqu xmm9, xmm10
+
 		inc r15d
 		jmp .cicloj
 
@@ -597,6 +592,10 @@ solver_lin_solve_2pixel_optimo:
 	push rdi 
 	push rsi 
 	
+	.debugg1:
+	;Push xmm13
+	sub rsp, 16
+	movdqu [rsp], xmm13
 	;Push xmm0
 	sub rsp, 16
 	movdqu [rsp], xmm0
@@ -616,6 +615,9 @@ solver_lin_solve_2pixel_optimo:
 	add rsp, 16
 	;Pop xmm0
 	movdqu xmm0, [rsp]
+	add rsp, 16
+	;Pop xmm13
+	movdqu xmm13, [rsp]
 	add rsp, 16
 
 	pop rsi
