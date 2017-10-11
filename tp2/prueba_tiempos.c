@@ -10,17 +10,17 @@
 
 fluid_solver* solver;
 
-char *archivo_out  =  "solver_lin_solve_1pixel_vs_c_o1";
+char *archivo_out  =  "tiempos_solver_lin_solve_1pixel.out";
 int ITERACIONES = 10;
 
 
 
 
-void llenarRand(float ** x, int N){
+void llenarX(float ** x, int N){
 	srand(time(NULL));
 	int i = 0;
 	for(i = 0 ; i < N ; i++){
-		float random = (float)rand() % 256;  //floats entre 0 y 255
+		float random = rand() % 256;  //floats entre 0 y 255
 		(*x)[i] = random;  
 	}
 }
@@ -39,7 +39,7 @@ int main(){
 		printf("error");	
 	}
 	for(int i = 4; i <= 800; i = i + 4){
-		double total_iteracion;
+		double total_iteracion = 0;
 		for(int iteracion = 0; iteracion < ITERACIONES; iteracion++){
 			int inner_size = i;
 			int size = (inner_size + 2)*(inner_size + 2);
