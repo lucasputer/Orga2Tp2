@@ -38,7 +38,7 @@ int main(){
 	if(f == NULL){
 		printf("error");	
 	}
-	for(int i = 4; i <= 800; i = i + 4){
+	for(int i = 4; i <= 200; i = i + 4){
 		double total_iteracion = 0;
 		for(int iteracion = 0; iteracion < ITERACIONES; iteracion++){
 			int inner_size = i;
