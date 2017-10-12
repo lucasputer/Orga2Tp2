@@ -23,7 +23,7 @@ section .data
 	val4: dd 4.0
 
 section .text
-global solver_lin_solve
+;global solver_lin_solve
 solver_lin_solve:
 
 	;siempre tener uno solo de los call descomentado
