@@ -10,7 +10,8 @@
 
 fluid_solver* solver;
 
-char *archivo_out  =  "tiempos_solver_lin_solve_1pixel.out";
+char *archivo_out_asm  =  "tiempos_solver_lin_solve_asm.out";
+char *archivo_out_c  =  "tiempos_solver_lin_solve_c.out";
 int ITERACIONES = 10;
 
 
@@ -33,13 +34,16 @@ void printMatriz(float * x, int N){
 }
 
 int main(){
-	remove(archivo_out);
-	FILE *f = fopen(archivo_out,"ab+");
-	if(f == NULL){
+	remove(archivo_out_c);
+	remove(archivo_out_asm);
+	FILE *fc = fopen(archivo_out_c,"ab+");
+	FILE *fa = fopen(archivo_out_asm,"ab+");
+	if(fc == NULL){
 		printf("error");	
 	}
 	for(int i = 4; i <= 200; i = i + 4){
-		double total_iteracion = 0;
+		double total_iteracion_c = 0;
+		double total_iteracion_asm = 0;
 		for(int iteracion = 0; iteracion < ITERACIONES; iteracion++){
 			int inner_size = i;
 			int size = (inner_size + 2)*(inner_size + 2);
@@ -53,17 +57,29 @@ int main(){
 
 			solver_set_initial_density(solver);
 			solver_set_initial_velocity(solver);
+			int total_medicion_c = 0;
+			int total_medicion_asm = 0;
+			for(int j = 0; j < 10 ; j++){
+				clock_t begin_c = clock();
+				solver_lin_solve(solver, 1, x, x0, 30.0, 15.0);
+				clock_t end_c = clock();
+				total_medicion_c += (double)(end_c - begin_c);
 
-			clock_t begin = clock();
-			solver_lin_solve(solver, 1, x, x0, 30.0, 15.0);
-			clock_t end = clock();
-			total_iteracion += (double)(end - begin);
+
+				clock_t begin_asm = clock();
+				solver_lin_solve_1pixel_por_lectura(solver, 1, x, x0, 30.0, 15.0);
+				clock_t end_asm = clock();
+				total_medicion_asm += (double)(end_asm - begin_asm);
+			}
+			total_iteracion_c += total_medicion_c/10.0f;				
+			total_iteracion_asm += total_medicion_asm/10.0f;				
 			//printf("iteracion %d\n", iteracion);
 		}
 
 		//int pFile;
 
-		total_iteracion = total_iteracion / ITERACIONES;
+		total_iteracion_c = total_iteracion_c / ITERACIONES;
+		total_iteracion_asm = total_iteracion_asm / ITERACIONES;
 		//printf("%d %f\n", i, total_iteracion);
 		//pFile = open(archivo_out, O_RDWR|O_CREAT|O_APPEND, 0600);
 		//if (-1 == dup2(pFile, 1)) { perror("cannot redirect stdout"); return 255; }
@@ -71,16 +87,22 @@ int main(){
 		//fflush(stdout);
 		//close( pFile );
 
-		printf("iteracion %d %f\n", i, total_iteracion);
-		fprintf(f,"%d %f\n", i, total_iteracion);
+		printf("iteracion c %d %f\n", i, total_iteracion_c);
+		fprintf(fc,"%d %f\n", i, total_iteracion_c);
+		printf("iteracion asm %d %f\n", i, total_iteracion_asm);
+		fprintf(fa,"%d %f\n", i, total_iteracion_asm);
 		
 	}
 	
-	fclose(f);
+	fclose(fc);
+	fclose(fa);	
 
 	return 0;
 
 }
+
+
+
 
 
 
