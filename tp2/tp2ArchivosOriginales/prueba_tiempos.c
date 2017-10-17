@@ -14,7 +14,7 @@ char *archivo_out_c  =  "tiempos_solver_lin_solve_c_o0.out";
 /*char *archivo_out_asm_1px  =  "tiempos_solver_lin_solve_asm_1px_o0.out";
 char *archivo_out_asm_2px  =  "tiempos_solver_lin_solve_asm_2px_o0.out";
 char *archivo_out_asm_opt  =  "tiempos_solver_lin_solve_asm_opt_o0.out";*/
-int ITERACIONESDISTINTAS = 10;
+int ITERACIONESDISTINTAS = 1;
 int ITERACIONESIGUALES = 100;
 
 
@@ -48,13 +48,9 @@ int main(){
 	if(fc == NULL){
 		printf("error");	
 	}
-
 	double promedio_c = 0;
-	double promedio_asm_1 = 0;
-	double promedio_asm_2 = 0;
-	double promedio_asm_o = 0;
 
-	for(int i = 8; i <= 400; i = i + 8){
+	for(int i = 8; i <= 200; i = i + 8){
 		double total_iteracion_c = 0;
 		/*double total_iteracion_asm_1px = 0;
 		double total_iteracion_asm_2px = 0;
@@ -111,40 +107,22 @@ int main(){
 		total_iteracion_asm_opt = total_iteracion_asm_opt / (float)ITERACIONESDISTINTAS;*/
 
 		promedio_c += total_iteracion_c;
-		/*promedio_asm_1 += total_iteracion_asm_1px;
-		promedio_asm_2 += total_iteracion_asm_2px;
-		promedio_asm_o += total_iteracion_asm_opt;*/
 
 
 		printf("iteracion c %d %f\n", i, total_iteracion_c);
 		fprintf(fc,"%d %f\n", i, total_iteracion_c);
-
 		/*printf("iteracion asm 1px %d %f\n", i, total_iteracion_asm_1px);
 		fprintf(fa1,"%d %f\n", i, total_iteracion_asm_1px);
-
 		printf("iteracion asm 2px %d %f\n", i, total_iteracion_asm_2px);
 		fprintf(fa2,"%d %f\n", i, total_iteracion_asm_2px);
-
 		printf("iteracion asm opt %d %f\n \n", i, total_iteracion_asm_opt);
 		fprintf(fao,"%d %f\n", i, total_iteracion_asm_opt);*/
 		
 	}
 	
-	promedio_c = promedio_c / 25.0f ;
+	promedio_c = promedio_c / 24.0f ;
 	printf("promedio c %f\n", promedio_c);
 	fprintf(fc," %f\n", promedio_c);
-
-/*	promedio_asm_1 = promedio_asm_1 / 100.0f ;
-	printf("promedio c %f\n", promedio_asm_1);
-	fprintf(fc," %f\n", promedio_asm_1);
-
-	promedio_asm_2 = promedio_asm_2 / 100.0f ;
-	printf("promedio c %f\n", promedio_asm_2);
-	fprintf(fc," %f\n", promedio_asm_2);
-
-	promedio_asm_o = promedio_asm_o / 100.0f ;
-	printf("promedio c %f\n", promedio_asm_o);
-	fprintf(fc," %f\n", promedio_asm_o);*/
 
 	fclose(fc);
 	/*fclose(fa1);	
@@ -154,9 +132,3 @@ int main(){
 	return 0;
 
 }
-
-
-
-
-
-

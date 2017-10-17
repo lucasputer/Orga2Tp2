@@ -4,12 +4,10 @@ CFLAGS= -Wall -Wextra -pedantic -O0 -g -lm -Wno-unused-variable -Wno-unused-para
 MACFLAGS = -g -lm  -Wno-deprecated
 LIBS = -lGL -lGLU -lglut -lpthread -lm
 MACLIBS = -framework OpenGL -framework GLUT
-NASM=nasm
-NASMFLAGS=-f elf64 -g -F DWARF
 
 all: demo
 
-demo: demo.c solver.o bmp.o solver_asm.o
+demo: demo.c solver.o bmp.o
 	$(CC) $(CFLAGS) $^ -o $@  $(LIBS)
 
 solver.o: solver.c
@@ -18,14 +16,8 @@ solver.o: solver.c
 bmp.o: bmp/bmp.c bmp/bmp.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-solver_asm.o: solver.asm
-	$(NASM) $(NASMFLAGS) $< -o $@
-
-prueba: prueba.c solver.o bmp.o solver_asm.o
+tiempos: prueba_tiempos.c solver.o bmp.o
 	$(CC) $(CFLAGS) $^ -o $@  $(LIBS)
-
-tiempos: prueba_tiempos.c solver.o bmp.o solver_asm.o
-	$(CC) $(CFLAGS) $^ -o $@  $(LIBS)	
 
 mac: demo_mac
 
@@ -41,5 +33,5 @@ bmp_mac.o: bmp/bmp.c bmp/bmp.h
 clean:
 	rm -f *.o
 	rm -f demo demo_mac
-	rm -f prueba
 	rm -f tiempos 
+
