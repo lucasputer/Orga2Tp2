@@ -8,9 +8,9 @@ from scipy import stats
 
 
 tamanios = 25
-salto_medicion = 4
+salto_medicion = 32
 distintos = 10
-iguales = 100 
+iguales = 50 
 
 optimizacion = "3"
 
@@ -31,7 +31,7 @@ def procesarTiempos(direccion):
 	    		for igu in range(0,iguales):
 	    			list_iguales.append(tiempos[tam*distintos*iguales + dist*iguales + igu])
 	    		list_distintos.append(min(list_iguales))
-	     	mediciones.append(np.mean(list_distintos))
+	     	mediciones.append(np.median(list_distintos))
 
 	return mediciones
 
@@ -42,8 +42,8 @@ def guardarTiempos(direccion, ejex, ejey):
 			my_file.write(str(ejex[i]) + ' ' + str(ejey[i]) + '\n')
 
 mediciones_c = procesarTiempos("output/tiempos_solver_lin_solve_c_o"+optimizacion+".out")
-mediciones_1px = procesarTiempos("output/tiempos_solver_lin_solve_asm_1px_o"+optimizacion+".out")
-mediciones_2px = procesarTiempos("output/tiempos_solver_lin_solve_asm_2px_o"+optimizacion+".out")
+#mediciones_1px = procesarTiempos("output/tiempos_solver_lin_solve_asm_1px_o"+optimizacion+".out")
+#mediciones_2px = procesarTiempos("output/tiempos_solver_lin_solve_asm_2px_o"+optimizacion+".out")
 mediciones_opt = procesarTiempos("output/tiempos_solver_lin_solve_asm_opt_o"+optimizacion+".out")
 
 '''
@@ -56,14 +56,14 @@ print(mediciones_opt)
 eje_x = [(i+1)*salto_medicion for i in range(0, tamanios)]
 
 #plt.clf()
-df = pd.DataFrame({'Dimensiones': eje_x, '1px': mediciones_1px, '2px': mediciones_2px, 'vertical': mediciones_opt, 'C': mediciones_c})
+df = pd.DataFrame({'Dimensiones': eje_x, 'vertical': mediciones_opt, 'C': mediciones_c})
 df.plot(x='Dimensiones')
 plt.ylabel('Tiempo (microsegundos)')
-plt.title("Mediciones de tiempo con O3")
+plt.title("Mediciones de tiempo de solver_lin_solve con O"+optimizacion+".")
 plt.show()
 
 
-
+#'1px': mediciones_1px, '2px': mediciones_2px, 
 
 
 
