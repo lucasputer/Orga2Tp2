@@ -10,10 +10,10 @@
 
 fluid_solver* solver;
 
-char *archivo_out_c  =  "output/tiempos_solver_lin_solve_c_o3.out";
-char *archivo_out_asm_1px  =  "output/tiempos_solver_lin_solve_asm_1px_o3.out";
-char *archivo_out_asm_2px  =  "output/tiempos_solver_lin_solve_asm_2px_o3.out";
-char *archivo_out_asm_opt  =  "output/tiempos_solver_lin_solve_asm_opt_o3.out";
+char *archivo_out_c  =  "output/tiempos_solver_lin_solve_c_o0.out";
+char *archivo_out_asm_1px  =  "output/tiempos_solver_lin_solve_asm_1px_o0.out";
+char *archivo_out_asm_2px  =  "output/tiempos_solver_lin_solve_asm_2px_o0.out";
+char *archivo_out_asm_opt  =  "output/tiempos_solver_lin_solve_asm_opt_o0.out";
 
 int CANTIDADDIMENSIONES = 25;
 int SALTO_MEDICION = 32;
@@ -38,13 +38,13 @@ void printMatriz(float * x, int N){
 
 int main(){
 	remove(archivo_out_c);
-	/*remove(archivo_out_asm_1px);
-	remove(archivo_out_asm_2px);*/
+	remove(archivo_out_asm_1px);
+	remove(archivo_out_asm_2px);
 	remove(archivo_out_asm_opt);
 	
 	FILE *fc = fopen(archivo_out_c,"ab+"); 
-	/*FILE *fa1 = fopen(archivo_out_asm_1px,"ab+");
-	FILE *fa2 = fopen(archivo_out_asm_2px,"ab+");*/
+	FILE *fa1 = fopen(archivo_out_asm_1px,"ab+");
+	FILE *fa2 = fopen(archivo_out_asm_2px,"ab+");
 	FILE *fao = fopen(archivo_out_asm_opt,"ab+");
 
 	if(fc == NULL){
@@ -67,8 +67,8 @@ int main(){
 			solver_set_initial_density(solver);
 			solver_set_initial_velocity(solver);
 			int total_medicion_c = 0;
-			/*int total_medicion_asm_1px = 0;
-			int total_medicion_asm_2px = 0;*/
+			int total_medicion_asm_1px = 0;
+			int total_medicion_asm_2px = 0;
 			int total_medicion_asm_opt = 0;
 			for(int j = 0; j < ITERACIONESIGUALES ; j++){
 				clock_t begin_c = clock();
@@ -76,7 +76,7 @@ int main(){
 				clock_t end_c = clock();
 				total_medicion_c += (end_c - begin_c);
 
-				/*clock_t begin_asm_1 = clock();
+				clock_t begin_asm_1 = clock();
 				solver_lin_solve_1pixel_por_lectura(solver, 1, x, x0, 30.0, 15.0);
 				clock_t end_asm_1 = clock();
 				total_medicion_asm_1px += (end_asm_1 - begin_asm_1);
@@ -85,18 +85,18 @@ int main(){
 				solver_lin_solve_2pixel_por_lectura(solver, 1, x, x0, 30.0, 15.0);
 				clock_t end_asm_2 = clock();
 				total_medicion_asm_2px += (end_asm_2 - begin_asm_2);
-*/
+
 				clock_t begin_asm_opt = clock();
 				solver_lin_solve_2pixel_optimo(solver, 1, x, x0, 30.0, 15.0);
 				clock_t end_asm_opt = clock();
 				total_medicion_asm_opt += (end_asm_opt - begin_asm_opt);
 				
 				fprintf(fc,"%i\n", total_medicion_c);
-/*
+
 				fprintf(fa1,"%i\n", total_medicion_asm_1px);
 
 				fprintf(fa2,"%i\n", total_medicion_asm_2px);
-*/
+
 				fprintf(fao,"%i\n", total_medicion_asm_opt);
 			}
 		}
@@ -105,8 +105,8 @@ int main(){
 
 
 	fclose(fc);
-	/*fclose(fa1);	
-	fclose(fa2);	*/
+	fclose(fa1);	
+	fclose(fa2);	
 	fclose(fao);	
 
 	return 0;
