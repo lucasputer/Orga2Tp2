@@ -35,6 +35,7 @@ def procesarTiempos(direccion):
 
 	return mediciones
 
+
 def guardarTiempos(direccion, ejex, ejey):
 	with open(direccion, 'w') as my_file:
 		for i in range(len(ejex)):
@@ -54,6 +55,22 @@ print(mediciones_opt)
 
 eje_x = [(i+1)*salto_medicion for i in range(0, tamanios)]
 
+#plt.clf()
+df = pd.DataFrame({'Dimensiones': eje_x, '1px': mediciones_1px, '2px': mediciones_2px, 'vertical': mediciones_opt, 'C': mediciones_c})
+df.plot(x='Dimensiones')
+plt.ylabel('Tiempo (microsegundos)')
+plt.title("Mediciones de tiempo con O3")
+plt.show()
+
+
+
+
+
+
+
+
+
+'''
 guardarTiempos("output/tiempos_procesados_lin_c_o"+optimizacion+".out", eje_x, mediciones_c)
 guardarTiempos("output/tiempos_procesados_lin_asm_1px_o"+optimizacion+".out", eje_x, mediciones_1px)
 guardarTiempos("output/tiempos_procesados_lin_asm_2px_o"+optimizacion+".out", eje_x, mediciones_2px)
@@ -66,7 +83,7 @@ simdo = pd.read_csv("output/tiempos_procesados_lin_asm_opt_o"+optimizacion+".out
 
 g = sns.lmplot(x="Dimension", y="Tiempo", data=c)
 #.set_ylabel('Tiempo (Nanosegundos)')
-'''
+
 sns.lmplot(time=simd1['x'], data=simd1['tiempo'], interpolate=True, color="yellow").set_xlabel('Dimension')
 sns.lmplot(time=simd2['x'], data=simd2['tiempo'], interpolate=True, color="blue")
 sns.lmplot(time=simdo['x'], data=simdo['tiempo'], interpolate=True, color="red")

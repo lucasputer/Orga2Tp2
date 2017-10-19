@@ -14,11 +14,11 @@ char *archivo_out_c  =  "tiempos_solver_lin_solve_c_o3.out";
 char *archivo_out_asm_1px  =  "tiempos_solver_lin_solve_asm_1px_o3.out";
 char *archivo_out_asm_2px  =  "tiempos_solver_lin_solve_asm_2px_o3.out";
 char *archivo_out_asm_opt  =  "tiempos_solver_lin_solve_asm_opt_o3.out";
+
+int CANTIDADDIMENSIONES = 25;
+int SALTO_MEDICION = 4;
 int ITERACIONESDISTINTAS = 10;
 int ITERACIONESIGUALES = 100;
-
-
-
 
 void llenarX(float ** x, int N){
 	srand(time(NULL));
@@ -51,7 +51,7 @@ int main(){
 		printf("error");	
 	}
 
-	for(int i = 4; i <= 100; i = i + 4){
+	for(int i = SALTO_MEDICION; i <= SALTO_MEDICION*CANTIDADDIMENSIONES; i = i + SALTO_MEDICION){
 
 		for(int iteracion = 0; iteracion < ITERACIONESDISTINTAS; iteracion++){
 			int inner_size = i;
