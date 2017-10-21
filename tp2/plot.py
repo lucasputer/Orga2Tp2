@@ -56,7 +56,7 @@ print(mediciones_opt)
 eje_x = [(i+1)*salto_medicion for i in range(0, tamanios)]
 
 #plt.clf()
-df = pd.DataFrame({'Dimensiones': eje_x, '1px': mediciones_1px, '2px': mediciones_2px, 'vertical': mediciones_opt, 'C': mediciones_c})
+df = pd.DataFrame({'Dimensiones': eje_x[0:13], '1px': mediciones_1px[0:13], '2px': mediciones_2px[0:13], 'vertical': mediciones_opt[0:13], 'C': mediciones_c[0:13]})
 df.plot(x='Dimensiones')
 plt.ylabel('Tiempo (microsegundos)')
 plt.title("Mediciones de tiempo de solver_lin_solve con O"+optimizacion+".")
