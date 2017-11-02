@@ -12,7 +12,7 @@ salto_medicion = 32
 distintos = 10
 iguales = 50 
 
-optimizacion = "0"
+optimizacion = "3"
 
 def procesarTiempos(direccion):
 	with open(direccion, 'r') as my_file:
@@ -41,28 +41,34 @@ def guardarTiempos(direccion, ejex, ejey):
 		for i in range(len(ejex)):
 			my_file.write(str(ejex[i]) + ' ' + str(ejey[i]) + '\n')
 
-mediciones_c = procesarTiempos("output/tiempos_solver_lin_solve_c_o"+optimizacion+".out")
+mediciones_o0 = procesarTiempos("output/solver_lin_solve_c_o0.out")
+mediciones_o1 = procesarTiempos("output/solver_lin_solve_c_o1.out")
+mediciones_o2 = procesarTiempos("output/solver_lin_solve_c_o2.out")
+mediciones_o3 = procesarTiempos("output/solver_lin_solve_c_o3.out")
 '''
-mediciones_1px = procesarTiempos("output/tiempos_solver_lin_solve_asm_1px_o"+optimizacion+".out")
-mediciones_2px = procesarTiempos("output/tiempos_solver_lin_solve_asm_2px_o"+optimizacion+".out")
-mediciones_opt = procesarTiempos("output/tiempos_solver_lin_solve_asm_opt_o"+optimizacion+".out")
-
-
-print(mediciones_c)
-print(mediciones_1px)
-print(mediciones_2px)
-print(mediciones_opt)
+print(mediciones_o0)
+print(mediciones_o1)
+print(mediciones_o2)
+print(mediciones_o3)
 '''
 
 eje_x = [(i+1)*salto_medicion for i in range(0, tamanios)]
 
 #plt.clf()
-#df = pd.DataFrame({'Dimensiones': eje_x[0:13], '1px': mediciones_1px[0:13], '2px': mediciones_2px[0:13], 'vertical': mediciones_opt[0:13], 'C': mediciones_c[0:13]})
-df = pd.DataFrame({'Dimensiones': eje_x[0:13], 'O0': mediciones_c[0:13]})
-df.plot(x='Dimensiones')
-plt.ylabel('Tiempo (microsegundos)')
-#plt.title("Mediciones de tiempo de solver_lin_solve con O"+optimizacion+".")
+#df = pd.DataFrame({'Dimensiones': eje_x[0:13], '1px': mediciones_o1[0:13], '2px': mediciones_o2[0:13], 'vertical': mediciones_o3[0:13], 'C': mediciones_o0[0:13]})
+o0 = pd.DataFrame({'x': eje_x[0:13], 'y': mediciones_o0[0:13]})
+o1 = pd.DataFrame({'x': eje_x[0:13], 'y': mediciones_o1[0:13]})
+o2 = pd.DataFrame({'x': eje_x[0:13], 'y': mediciones_o2[0:13]})
+o3 = pd.DataFrame({'x': eje_x[0:13], 'y': mediciones_o3[0:13]})
+	
+
+sns.tsplot(time=o0['x'], data=o0['y'], interpolate=True, color="green" , marker='x').set_ylabel('Tiempo (Nanosegundos)')
+sns.tsplot(time=o1['x'], data=o1['y'], interpolate=True, color="blue").set_xlabel('Dimension')
+sns.tsplot(time=o2['x'], data=o2['y'], interpolate=True, color="yellow").set_xlabel('Dimension')
+sns.tsplot(time=o3['x'], data=o3['y'], interpolate=True, color="red").set_xlabel('Dimension')	
+
 plt.title("Solver_lin_solve con distintas optimizaciones de c")
+
 plt.show()
 
 
@@ -74,10 +80,10 @@ plt.show()
 
 
 '''
-guardarTiempos("output/tiempos_procesados_lin_c_o"+optimizacion+".out", eje_x, mediciones_c)
-guardarTiempos("output/tiempos_procesados_lin_asm_1px_o"+optimizacion+".out", eje_x, mediciones_1px)
-guardarTiempos("output/tiempos_procesados_lin_asm_2px_o"+optimizacion+".out", eje_x, mediciones_2px)
-guardarTiempos("output/tiempos_procesados_lin_asm_opt_o"+optimizacion+".out", eje_x, mediciones_opt)
+guardarTiempos("output/tiempos_procesados_lin_c_o"+optimizacion+".out", eje_x, mediciones_o0)
+guardarTiempos("output/tiempos_procesados_lin_asm_1px_o"+optimizacion+".out", eje_x, mediciones_o1)
+guardarTiempos("output/tiempos_procesados_lin_asm_2px_o"+optimizacion+".out", eje_x, mediciones_o2)
+guardarTiempos("output/tiempos_procesados_lin_asm_opt_o"+optimizacion+".out", eje_x, mediciones_o3)
 
 c = pd.read_csv("output/tiempos_procesados_lin_c_o"+optimizacion+".out", sep=' ')
 simd1 = pd.read_csv("output/tiempos_procesados_lin_asm_1px_o"+optimizacion+".out", sep=' ')

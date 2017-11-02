@@ -1,6 +1,6 @@
 CC=c99
 MACCC=gcc
-CFLAGS= -Wall -Wextra -pedantic -O3 -g -lm -Wno-unused-variable -Wno-unused-parameter
+CFLAGS= -Wall -Wextra -pedantic -O2 -g -lm -Wno-unused-variable -Wno-unused-parameter
 MACFLAGS = -g -lm  -Wno-deprecated
 LIBS = -lGL -lGLU -lglut -lpthread -lm
 MACLIBS = -framework OpenGL -framework GLUT
