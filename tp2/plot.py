@@ -42,11 +42,12 @@ def guardarTiempos(direccion, ejex, ejey):
 			my_file.write(str(ejex[i]) + ' ' + str(ejey[i]) + '\n')
 
 mediciones_c = procesarTiempos("output/tiempos_solver_lin_solve_c_o"+optimizacion+".out")
+'''
 mediciones_1px = procesarTiempos("output/tiempos_solver_lin_solve_asm_1px_o"+optimizacion+".out")
 mediciones_2px = procesarTiempos("output/tiempos_solver_lin_solve_asm_2px_o"+optimizacion+".out")
 mediciones_opt = procesarTiempos("output/tiempos_solver_lin_solve_asm_opt_o"+optimizacion+".out")
 
-'''
+
 print(mediciones_c)
 print(mediciones_1px)
 print(mediciones_2px)
@@ -56,10 +57,12 @@ print(mediciones_opt)
 eje_x = [(i+1)*salto_medicion for i in range(0, tamanios)]
 
 #plt.clf()
-df = pd.DataFrame({'Dimensiones': eje_x[0:13], '1px': mediciones_1px[0:13], '2px': mediciones_2px[0:13], 'vertical': mediciones_opt[0:13], 'C': mediciones_c[0:13]})
+#df = pd.DataFrame({'Dimensiones': eje_x[0:13], '1px': mediciones_1px[0:13], '2px': mediciones_2px[0:13], 'vertical': mediciones_opt[0:13], 'C': mediciones_c[0:13]})
+df = pd.DataFrame({'Dimensiones': eje_x[0:13], 'O0': mediciones_c[0:13]})
 df.plot(x='Dimensiones')
 plt.ylabel('Tiempo (microsegundos)')
-plt.title("Mediciones de tiempo de solver_lin_solve con O"+optimizacion+".")
+#plt.title("Mediciones de tiempo de solver_lin_solve con O"+optimizacion+".")
+plt.title("Solver_lin_solve con distintas optimizaciones de c")
 plt.show()
 
 
