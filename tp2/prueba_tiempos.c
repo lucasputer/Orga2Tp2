@@ -10,7 +10,7 @@
 
 fluid_solver* solver;
 
-char *archivo_out_c  =  "output/solver_lin_solve_c_o2.out";
+char *archivo_out_c  =  "output/solver_project_opt_o0.out";
 //char *archivo_out_asm_1px  =  "output/tiempos_solver_lin_solve_asm_1px_o0.out";
 //char *archivo_out_asm_2px  =  "output/tiempos_solver_lin_solve_asm_2px_o0.out";
 //char *archivo_out_asm_opt  =  "output/tiempos_solver_lin_solve_asm_opt_o0.out";
